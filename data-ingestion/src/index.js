@@ -1,39 +1,17 @@
-const express = require('express');
-const { connectRabbitMQ } = require('./services/rabbitmqService');
-const { fetchMarketData } = require('./controllers/dataController');
-require('./config/env'); // Load environment variables
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { fetchAndStoreData } from './controllers/dataController.js';
+import cron from 'node-cron';
 
+dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3001;
 
-// Middleware to parse JSON requests
-app.use(express.json());
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error(err));
 
-// Routes
-app.get('/fetch-data', fetchMarketData);
+// Fetch data every day at midnight
+cron.schedule('0 0 * * *', fetchAndStoreData);
 
-// Start the server and connect to RabbitMQ
-async function startServer() {
-  try {
-    await connectRabbitMQ();
-    app.listen(PORT, () => {
-      console.log(`Data Ingestion Service running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Failed to start server:', error.message);
-    process.exit(1);
-  }
-}
-
-startServer();
-
-// Handle uncaught exceptions and rejections
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
-});
+app.listen(process.env.PORT, () => console.log(`Data Ingestion on port ${process.env.PORT}`));

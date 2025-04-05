@@ -1,35 +1,35 @@
-const axios = require('axios');
-const { publishToQueue } = require('../services/rabbitmqService');
-const { ALPHA_VANTAGE_API_KEY } = process.env;
+import axios from 'axios';
+import Stock from '../models/stock.js';
 
-async function fetchMarketData(req, res) {
+const companies = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'BRK.B', 'META', 'TSLA', 'UNH', 'JNJ', 'JPM', 'V', 'PG', 'XOM', 'MA', 'HD', 'CVX', 'ABBV', 'PEP'];
+
+export const fetchAndStoreData = async () => {
   try {
-    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=AAPL&interval=1min&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await axios.get(url);
-    const timeSeries = response.data['Time Series (1min)'];
-    if (!timeSeries) {
-      throw new Error('No time series data available');
+    for (const symbol of companies) {
+      const response = await axios.get(
+        `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`
+      );
+      const timeSeries = response.data['Time Series (Daily)'];
+      const data = Object.entries(timeSeries).map(([date, values]) => ({
+        date,
+        open: values['1. open'],
+        high: values['2. high'],
+        low: values['3. low'],
+        close: values['4. close'],
+        volume: values['5. volume'],
+      }));
+
+      await Stock.updateOne(
+        { symbol },
+        { $set: { symbol, data } },
+        { upsert: true }
+      );
+      console.log(`Stored data for ${symbol}`);
     }
-
-    const latestTimestamp = Object.keys(timeSeries)[0];
-    const latestData = timeSeries[latestTimestamp];
-
-    const data = {
-      timestamp: new Date(latestTimestamp),
-      symbol: 'AAPL',
-      open: parseFloat(latestData['1. open']),
-      high: parseFloat(latestData['2. high']),
-      low: parseFloat(latestData['3. low']),
-      close: parseFloat(latestData['4. close']),
-      volume: parseInt(latestData['5. volume']),
-    };
-
-    await publishToQueue(data);
-    res.status(200).json({ message: 'Data fetched and published successfully', data });
   } catch (error) {
-    console.error('Error fetching market data:', error.message);
-    res.status(500).json({ error: 'Failed to fetch market data' });
+    console.error('Error fetching data:', error);
   }
-}
+};
 
-module.exports = { fetchMarketData };
+// Seed historical data once
+fetchAndStoreData();

@@ -1,20 +1,25 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import Dashboard from './components/Dashboard';
-import { AuthProvider } from './context/AuthContext';
-
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { Home } from "./pages/Home";
+import { Crashfile } from "./pages/Crashfile";
+import { Broker } from "./pages/broker";
+import { Login } from "./pages/Login";
+import Signup from "./pages/Signup";
+import { DBoardS } from "./pages/DBoardS";
+import { SignedIn, SignedOut } from "@clerk/clerk-react";
+import { DBoardD } from "./pages/DBoardD";
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/" element={<Login />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/crash/:id" element={<Crashfile/>}/>
+        <Route path="/brokers/:id" element={<Broker/>}/>
+        <Route path="/signin" element={<Login/>}/>
+        <Route path="/signup" element={<Signup/>}/>
+        <Route path="/dashboard/:industry" element={<DBoardS/>}/>
+        <Route path="/dashboard/:industry/:company" element={<DBoardD/>}/>
+      </Routes>
+    </Router>
   );
 }
 

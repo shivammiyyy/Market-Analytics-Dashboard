@@ -1,53 +1,33 @@
-const express = require('express');
-const http = require('http');
-const { connectMongoDB } = require('./services/mongoService');
-const { setupSocketIO } = require('./services/socketService');
-const authenticate = require('./middleware/auth');
-const { login } = require('./controllers/authController');
-const { getLatestData, getHistoricalData } = require('./controllers/dataController');
-require('./config/env');
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors'; // Added import
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
+import dashBoardRouter from './routes/dashBoardRouter.js';
+
+dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
-const io = setupSocketIO(server);
-const PORT = process.env.PORT || 3003;
-
 app.use(express.json());
 
-// Public routes
-app.post('/api/auth/login', login);
+app.use(cors({
+    origin: process.env.FRONT_END_KEY, // e.g., 'http://localhost:3000'
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true // Fixed typo
+}));
 
-// Protected routes
-app.get('/api/data/latest', authenticate, getLatestData);
-app.get('/api/data/history', authenticate, getHistoricalData);
+mongoose
+    .connect(process.env.MONGO_URL)
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
-// Error handling
-app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
-    error: { message: err.message },
-  });
+const clerkMiddleware = ClerkExpressWithAuth({
+    apiKey: process.env.CLERK_SECRET_KEY,
 });
 
-async function startServer() {
-  try {
-    await connectMongoDB();
-    server.listen(PORT, () => {
-      console.log(`API Gateway running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Server startup failed:', error.message);
-    process.exit(1);
-  }
-}
+app.use('/user', clerkMiddleware, dashBoardRouter);
 
-startServer();
-
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-  process.exit(1);
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('Unhandled Rejection:', promise, 'reason:', reason);
-  process.exit(1);
+const PORT = process.env.PORT || 3003;
+app.listen(PORT, () => {
+    console.log(`App is running on port ${PORT}`);
 });
