@@ -8,6 +8,9 @@ import { DBoardS } from "./pages/DBoardS";
 import { SignedIn, SignedOut } from "@clerk/clerk-react";
 import { DBoardD } from "./pages/DBoardD";
 import Navbar from "./components/Navbar";
+import { About } from "./pages/About";
+import Contact from "./pages/Contact";
+import { News } from "./pages/News";
 function App() {
   return (
     <Router>
@@ -17,6 +20,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/crash/:id" element={<Crashfile/>}/>
         <Route path="/brokers/:id" element={<Broker/>}/>
+        <Route path='/about' element={<About/>}/>
+        <Route path='/contact' element={<Contact/>}/>
+        <Route path="/news" element={<News/>}/>
         <Route path="/signin" element={<Login/>}/>
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/dashboard/:industry" element={
