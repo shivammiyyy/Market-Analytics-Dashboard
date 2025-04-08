@@ -11,7 +11,10 @@ export const DBoardS = () => {
    <div className='flex flex-col'>
       <div className='flex flex-row'>
         <Sidebar/>
-        <CompCard industry={industry}/>
+        <div className='py-10 px-10'>
+        <CompCard industry={industry} />
+        </div>
+        
       </div>
       <Footer/>
     </div>

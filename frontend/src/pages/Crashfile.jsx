@@ -18,7 +18,7 @@ export const Crashfile = () => {
     
     return (
         <div className="bg-white min-h-screen font-sans">
-            <Navbar />
+            
             <div className="max-w-5xl mx-auto px-8 py-14">
                 <h2 className="text-5xl font-extrabold text-blue-700 mb-8 text-center uppercase tracking-wide drop-shadow-md">
                     {crash.name}

@@ -11,11 +11,11 @@ export const DBoardD = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeGraph, setActiveGraph] = useState("candle");
-
+  const backend_port = import.meta.env.VITE_BACKEND_URL
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/user/${symbol}`);
+        const response = await fetch(`http://localhost:${backend_port}/user/${symbol}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
