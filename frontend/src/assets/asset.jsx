@@ -8,7 +8,7 @@ import Buffet from './buffett.jpg';
 import Livermore from './livermore.jpg';
 import Tudor from './tudor.jpg';
 import Abbvie from './abbvie.png';
-import Alphabet from './alphabet.png';
+import Alphabet from './alphabet.webp';
 import Amazon from './amazon.jpg';
 import Apple from './apple.png';
 import Berkshire from './berkshire.png';

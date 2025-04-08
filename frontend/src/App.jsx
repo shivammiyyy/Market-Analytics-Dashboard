@@ -17,7 +17,7 @@ function App() {
         <Route path="/signin" element={<Login/>}/>
         <Route path="/signup" element={<Signup/>}/>
         <Route path="/dashboard/:industry" element={<DBoardS/>}/>
-        <Route path="/dashboard/:industry/:company" element={<DBoardD/>}/>
+        <Route path="/dashboard/:industry/:symbol" element={<DBoardD/>}/>
       </Routes>
     </Router>
   );
