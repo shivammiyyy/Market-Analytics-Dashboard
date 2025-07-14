@@ -1,7 +1,7 @@
 Here's a complete `README.md` for your stock analysis dashboard project. This version is designed to be beginner-friendly but also informative for recruiters or contributors:
 
 ---
-
+Deployement - https://shimmering-medovik-298ee6.netlify.app/dashboard/IT/MSFT
 ```markdown
 # 📊 Stock Analyzer Dashboard
 
